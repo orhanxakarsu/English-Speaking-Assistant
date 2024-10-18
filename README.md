@@ -1,0 +1,1 @@
+Here, first of all, to use the BARK library https://github.com/suno-ai/bark we install BARK on our own system with the steps here. Then we go to the required folder and run the “fastapi run ll-api.py” code. With this, the necessary services are running. Then we start the interface by saying “streamlit run interface.py” and everything is ready!
