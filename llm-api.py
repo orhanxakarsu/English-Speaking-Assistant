@@ -42,28 +42,7 @@ def info():
             Model direkt olarak past_content yapısında veri dönmektedir. 
 
             """
-"""
-model = AutoModelForCausalLM.from_pretrained(
-    "microsoft/Phi-3.5-mini-instruct", 
-    device_map="cuda", 
-    torch_dtype="auto", 
-    trust_remote_code=True, 
-)
-tokenizer = AutoTokenizer.from_pretrained("microsoft/Phi-3.5-mini-instruct")
 
-pipe = pipeline(
-    "text-generation",
-    model=model,
-    tokenizer=tokenizer,
-)
-
-generation_args = {
-    "max_new_tokens": 200,
-    "return_full_text": False,
-    "temperature": 0.6,
-    "do_sample": True,
-}
-"""
 
 pipe = pipeline(
     "text-generation",
@@ -89,46 +68,22 @@ def get_question_from_messages(data: DataOfDict):
         #input = [start_content, user_content ]
         # Modelden yanıt alın
         outputs = pipe(user_content,max_new_tokens=200)#, **generation_args)
-        #assistant_response = outputs[0]["generated_text"].strip()
         #me
         # Mesaj listesini güncelleyin
-        #messages = [{"role": "user", "content": [QA_role, user_message]}]
-        #messages.append({"role": "assistant", "content": [assistant_response]})
     
     else:
-        # Mevcut mesajları birleştirin
-        #combined_input = "\n".join([f"{msg['role']}: {msg['content'][0]}" for msg in messages])
+
         
         # Modelden yanıt alın
         outputs = pipe(messages,max_new_tokens=512)#, **generation_args)
         #assistant_response = outputs[0]["generated_text"][-1]['content']
         
         # Mesaj listesini güncelleyin
-        #messages.append({"role": "assistant", "content": [assistant_response]})
 
     return  outputs[0]["generated_text"]
 
 
 
-@app.post("/get_question/")
-def get_question(data :Data):
-    past_content = data.past_content
-    question = data.question
-    
-    if len(past_content) ==1 or len(past_content) ==0 :
-        past_content = [{"role":"user","content":["Öğretmenlere yardım eden bir yapay zeka robotusun. İşin öğretmenlerin sorularını cevaplamak, onlara istedikleri şekilde soru hazırlamak, verdikleri soruları yanıtlamak. İsmin KCAI. Ona göre cevap ver."]}]
-    
-        past_content[0]['content'].append(question)
-    else:
-        
-        question_true_format = {"role":"user","content":question}
-        past_content.append(question_true_format)
-    
-    outputs = pipe(past_content, max_new_tokens=10000)
-    assistant_response = outputs[0]["generated_text"][-1]["content"].strip()
-    past_content.append({"role":"assistant","content":[assistant_response]})
-    
-    return past_content
     
     
     
